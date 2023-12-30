@@ -22,28 +22,17 @@ interface HomeProps {
 
 const Home: React.FC<HomeProps> = () => {
     const { trainingDays, fetchTrainingDays, addTrainingDay, deleteTrainingDay } = useDatabase();
-    const [date, setDate] = useState(new Date());
+    const [date] = useState(new Date());
 
     useEffect(() => {
         fetchTrainingDays(); // Загрузить данные при монтировании компонента
     }, [fetchTrainingDays]);
 
-    // const onAddTrainingDay = async () => {
-    //     const newTrainingDay = {
-    //         id: Date.now(),
-    //         name: "New Workout",
-    //         date: date.toISOString().split('T')[0]
-    //     };
 
-    //     await addTrainingDay(newTrainingDay);
-    //     fetchTrainingDays(); // Update the list of workouts
+    // const onChange = (newDate: Date) => {
+    //     setDate(newDate);
+    //     // Add logic here to display workout details
     // };
-
-
-    const onChange = (newDate: Date) => {
-        setDate(newDate);
-        // Add logic here to display workout details
-    };
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [newTrainingName, setNewTrainingName] = useState("");
@@ -62,7 +51,7 @@ const Home: React.FC<HomeProps> = () => {
     return (
         <div className="flex flex-col items-center justify-center p-4">
             <Calendar
-                onChange={onChange}
+                // onChange={onChange}
                 value={date}
                 className="border rounded-lg"
             />
@@ -84,7 +73,7 @@ const Home: React.FC<HomeProps> = () => {
                                 </Link>
                             </TERipple>
                             <button
-                                onClick={() => deleteTrainingDay(day.id)}
+                                onClick={() => day.id && deleteTrainingDay(day.id)}
                                 className="inline-block rounded bg-danger p-1.5 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-danger-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-danger-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-danger-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)]"
                                 type='button'
                             >

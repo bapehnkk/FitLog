@@ -493,9 +493,14 @@
   resolved "https://registry.npmjs.org/@rollup/rollup-win32-x64-msvc/-/rollup-win32-x64-msvc-4.9.1.tgz"
   integrity sha512-PyJsSsafjmIhVgaI1Zdj7m8BB8mMckFah/xbpplObyHfiXzKcI5UOUXRyOdHW7nz4DpMCuzLnF7v5IWHenCwYA==
 
-"@tauri-apps/api@2.0.0-alpha.13", "@tauri-apps/api@^2.0.0-alpha.13":
+"@tauri-apps/api@2.0.0-alpha.13":
   version "2.0.0-alpha.13"
   resolved "https://registry.npmjs.org/@tauri-apps/api/-/api-2.0.0-alpha.13.tgz"
+  integrity sha512-sGgCkFahF3OZAHoGN5Ozt9WK7wJlbVZSgWpPQKNag4nSOX1+Py6VDRTEWriiJHDiV+gg31CWHnNXRy6TFoZmdA==
+
+"@tauri-apps/api@^2.0.0-alpha.13":
+  version "2.0.0-alpha.13"
+  resolved "https://registry.yarnpkg.com/@tauri-apps/api/-/api-2.0.0-alpha.13.tgz#54a080fe7f61715a817828ab1041813a8b9136e6"
   integrity sha512-sGgCkFahF3OZAHoGN5Ozt9WK7wJlbVZSgWpPQKNag4nSOX1+Py6VDRTEWriiJHDiV+gg31CWHnNXRy6TFoZmdA==
 
 "@tauri-apps/cli-darwin-arm64@2.0.0-alpha.20":
@@ -550,7 +555,7 @@
 
 "@tauri-apps/cli@^2.0.0-alpha.20":
   version "2.0.0-alpha.20"
-  resolved "https://registry.npmjs.org/@tauri-apps/cli/-/cli-2.0.0-alpha.20.tgz"
+  resolved "https://registry.yarnpkg.com/@tauri-apps/cli/-/cli-2.0.0-alpha.20.tgz#2fa119968c0ae37412047738231126460d6a807e"
   integrity sha512-TNoaRunh2a9Id57EOWSSEziTszBdxyWUtHq9qw3olgY+i/fF3s0Kxwy2c7TM4kON1KnBSvzF+FEGRInNJNvbXw==
   optionalDependencies:
     "@tauri-apps/cli-darwin-arm64" "2.0.0-alpha.20"

@@ -19,8 +19,8 @@ export const CollapseExercise: React.FC<CollapseExerciseProps> = ({ label, onCha
     const toggleShow = () => setShow(!show);
 
     // Функция для проверки, был ли клик снаружи компонента
-    const handleClickOutside = (event) => {
-        if (ref.current && !ref.current.contains(event.target)) {
+    const handleClickOutside = (event: { target: any }) => {
+        if (ref.current && (ref.current as HTMLElement).contains(event.target)) {
             setShow(false);
         }
     };

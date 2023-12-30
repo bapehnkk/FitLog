@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { TrashIcon } from "@heroicons/react/24/solid";
 import { TETabs, TETabsContent, TETabsItem, TETabsPane } from "tw-elements-react";
 import { CollapseExercise } from "@/components/CollapseExercise";
-import { useDatabase, TrainingDay } from '@/context/DatabaseProvider';
+import { useDatabase } from '@/context/DatabaseProvider';
 
 export const ExerciseTabs = () => {
     const [activeTab, setActiveTab] = useState("type1");
@@ -18,7 +18,7 @@ export const ExerciseTabs = () => {
     // console.log(groupedExercises);
 
 
-    const handleExerciseUpdate = (exerciseId, field) => (newValue) => {
+    const handleExerciseUpdate = (exerciseId: number | undefined, field: string) => (newValue: any) => {
         // Находим текущее упражнение и обновляем его
         const updatedExercises = exercises.map(ex => {
             if (ex.id === exerciseId) {
@@ -30,16 +30,19 @@ export const ExerciseTabs = () => {
         // Находим обновленное упражнение
         const updatedExercise = updatedExercises.find(ex => ex.id === exerciseId);
 
-        // Вызываем функцию обновления с полным объектом упражнения
-        updateExercise(exerciseId, updatedExercise)
-            .then(rowsAffected => {
-                if (rowsAffected > 0) {
-                    console.log(`Упражнение с ID ${exerciseId} обновлено.`);
-                }
-            })
-            .catch(error => {
-                console.error('Ошибка обновления упражнения:', error);
-            });
+        // Check if exerciseId is defined and updatedExercise is not undefined before updating the exercise
+        if (exerciseId !== undefined && updatedExercise !== undefined) {
+            // Call the updateExercise function with the exerciseId and updatedExercise
+            updateExercise(exerciseId, updatedExercise)
+                .then(rowsAffected => {
+                    if (rowsAffected > 0) {
+                        console.log(`Упражнение с ID ${exerciseId} обновлено.`);
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка обновления упражнения:', error);
+                });
+        }
     };
 
 
@@ -71,7 +74,7 @@ export const ExerciseTabs = () => {
                                         <li className='flex justify-between'>
                                             <p>{exercise.name}</p>
                                             <button
-                                                onClick={() => deleteExercise(exercise.id)}
+                                                onClick={() => exercise.id && deleteExercise(exercise.id)}
                                                 className="inline-block rounded bg-danger p-1.5 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-danger-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-danger-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-danger-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)]"
                                                 type='button'
                                             >
@@ -92,7 +95,6 @@ export const ExerciseTabs = () => {
                                             <p>
                                                 Повторения: {exercise.repetitions}
                                             </p>
-
 
                                             <CollapseExercise
                                                 label="Повторения"

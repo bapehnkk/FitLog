@@ -2,13 +2,13 @@ import React, { createContext, useContext, useState } from 'react';
 import Database from "@tauri-apps/plugin-sql";
 
 export interface TrainingDay {
-  id: number;
+  id?: number;
   name: string;
   date: string;
 }
 export interface Exercise {
-  id: number;
-  training_day_id: number;
+  id?: number;
+  training_day_id?: number;
   type: number;
   name: string;
   sets: number;
@@ -17,12 +17,12 @@ export interface Exercise {
 }
 
 export interface ExerciseType {
-  id: number;
+  id?: number;
   name: string; // Например, 'Разминка', 'Основные упражнения', 'Заминка'
 }
 
 export interface Template {
-  id: number;
+  id?: number;
   name: string;
   exercise_type_id: number;
   sets: number;
@@ -55,8 +55,8 @@ export const useDatabase = () => useContext(DatabaseContext);
 export const DatabaseProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [trainingDays, setTrainingDays] = useState<TrainingDay[]>([]);
   const [exercises, setExercises] = useState<Exercise[]>([]);
-  const [exerciseTypes, setExerciseTypes] = useState<ExerciseType[]>([]);
-  const [templates, setTemplates] = useState<Template[]>([]);
+  const [exerciseTypes] = useState<ExerciseType[]>([]);
+  const [templates] = useState<Template[]>([]);
 
   // Functions for interacting with the database
 

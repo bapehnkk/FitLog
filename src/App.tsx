@@ -11,7 +11,7 @@ function App() {
 
   // Остальная часть компонента App
   return (
-    <div className="app-container">
+    <div className="app-container bg-backgroundMain min-h-screen">
     <ThemeSwitcher />
       <DatabaseProvider>
         <AppRouter/>

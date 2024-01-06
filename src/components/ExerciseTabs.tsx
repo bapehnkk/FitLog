@@ -44,7 +44,17 @@ export const ExerciseTabs = () => {
                 });
         }
     };
-
+    function convertSecondsToMinutes(seconds: number) {
+        let minutes = Math.floor(seconds / 60);
+        let remainingSeconds = seconds % 60;
+    
+        // Добавляем ведущий ноль, если необходимо
+        let formattedMinutes = minutes.toString().padStart(2, '0');
+        let formattedSeconds = remainingSeconds.toString().padStart(2, '0');
+    
+        return `${formattedMinutes}:${formattedSeconds}`;
+    }
+    
 
     return (
         <div className="mb-3">
@@ -91,16 +101,28 @@ export const ExerciseTabs = () => {
                                                 onChange={handleExerciseUpdate(exercise.id, 'sets')}
                                             />
                                         </li>
-                                        <li className='flex justify-between'>
-                                            <p>
-                                                Повторения: {exercise.repetitions}
-                                            </p>
+                                        {exercise.repetitions ?
+                                            <li className='flex justify-between'>
+                                                <p>
+                                                    Повторения: {exercise.repetitions}
+                                                </p>
 
-                                            <CollapseExercise
-                                                label="Повторения"
-                                                onChange={handleExerciseUpdate(exercise.id, 'repetitions')}
-                                            />
-                                        </li>
+                                                <CollapseExercise
+                                                    label="Повторения"
+                                                    onChange={handleExerciseUpdate(exercise.id, 'repetitions')}
+                                                />
+                                            </li> :
+                                            <li className='flex justify-between'>
+                                                <p>
+                                                    Время повтора: {convertSecondsToMinutes(exercise.duration || 0)} мин
+                                                </p>
+
+                                                <CollapseExercise
+                                                    label="Время повтора (сек)"
+                                                    onChange={handleExerciseUpdate(exercise.id, 'duration')}
+                                                />
+                                            </li>
+                                        }
                                         <li className='flex justify-between'>
                                             <p>
                                                 Вес: {exercise.weight} кг

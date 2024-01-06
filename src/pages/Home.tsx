@@ -17,41 +17,49 @@ import {
 } from "tw-elements-react";
 import { TrashIcon } from '@heroicons/react/24/solid';
 
+
+type DatePiece = Date | null;
+
+type DateMy = DatePiece | [DatePiece, DatePiece];
 interface HomeProps {
 }
 
 const Home: React.FC<HomeProps> = () => {
     const { trainingDays, fetchTrainingDays, addTrainingDay, deleteTrainingDay } = useDatabase();
-    const [date] = useState(new Date());
+    const [date, setDate] = useState<DateMy>(new Date());
+
+    useEffect(() => {
+        console.log("Date changed:", date);
+    }, [date]);
 
     useEffect(() => {
         fetchTrainingDays(); // Загрузить данные при монтировании компонента
     }, [fetchTrainingDays]);
 
 
-    // const onChange = (newDate: Date) => {
-    //     setDate(newDate);
-    //     // Add logic here to display workout details
-    // };
+
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [newTrainingName, setNewTrainingName] = useState("");
 
     const onAddTrainingDay = async () => {
-        if (newTrainingName) {
-            await addTrainingDay({ id: Date.now(), name: newTrainingName, date: date.toISOString().split('T')[0] });
+        if (newTrainingName && date instanceof Date) {
+            // Преобразуем объект Date в строку в локальном часовом поясе
+            const dateString = date.toLocaleDateString('en-CA'); // 'en-CA' использует формат YYYY-MM-DD
+            console.log("Adding new training day:", newTrainingName, dateString);
+            await addTrainingDay({ id: Date.now(), name: newTrainingName, date: dateString });
             setIsModalOpen(false); // Закрыть модальное окно
             setNewTrainingName(""); // Сбросить название тренировки
             fetchTrainingDays(); // Обновить список тренировок
         }
     };
-
+    
 
 
     return (
         <div className="flex flex-col items-center justify-center p-4">
             <Calendar
-                // onChange={onChange}
+                onChange={setDate}
                 value={date}
                 className="border rounded-lg"
             />
@@ -64,7 +72,7 @@ const Home: React.FC<HomeProps> = () => {
                 {/* Example list of workouts (can be replaced with a dynamic list) */}
                 <ul className="w-96">
                     {trainingDays.map((day) => (
-                        <li className="w-full flex justify-between items-center">
+                        <li key={day.id} className="w-full flex justify-between items-center">
                             <TERipple key={day.id} className="w-full  py-1">
                                 <Link
                                     to={`/workout/${day.id}`}

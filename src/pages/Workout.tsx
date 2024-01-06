@@ -11,26 +11,48 @@ import {
     TEModalHeader,
     TEModalBody,
     TEModalFooter,
-    TESelect
+    TESelect, TETabs, TETabsItem, TETabsContent, TETabsPane
 } from "tw-elements-react";
-import { ArrowUturnLeftIcon } from '@heroicons/react/24/solid';
+import { ArrowUturnLeftIcon, ClockIcon, CalculatorIcon } from '@heroicons/react/24/solid';
+
 import { Link } from 'react-router-dom';
 import ExerciseTabs from '@/components/ExerciseTabs';
+import clsx from "clsx";
 
+
+interface ActiveTabBorderWrapperProps {
+    children: React.ReactNode;
+    isActive: boolean;
+}
+
+const ActiveTabBorderWrapper: React.FC<ActiveTabBorderWrapperProps> = ({ children, isActive }) => (
+    <div className={clsx('relative', { 'border-r-2 border-primary': isActive })}>
+        {children}
+    </div>
+);
 
 interface Exercise {
     name: string;
     sets: number;
-    repetitions: number;
+    repetitions: number | null;
     weight: number;
     type: any;
+    duration: number | null;
 }
+
 
 const Workout: React.FC = () => {
     const { id } = useParams();
     const { fetchTrainingDayDetails, addExercise, fetchExercisesForTrainingDay } = useDatabase();
     const [trainingDay, setTrainingDay] = useState({} as TrainingDay);
-    const [newExercise, setNewExercise] = useState<Exercise>({ name: '', sets: 0, repetitions: 0, weight: 0, type: 1 });
+    const [newExercise, setNewExercise] = useState<Exercise>({
+        name: '',
+        sets: 0,
+        repetitions: null,
+        weight: 0,
+        type: 1,
+        duration: null
+    });
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState("");
 
@@ -53,14 +75,33 @@ const Workout: React.FC = () => {
 
             setShowToast(true);
             setToastMessage(`Упражнение ${newExercise.name} добавлено`);
-            setNewExercise({ name: '', sets: 0, repetitions: 0, weight: 0, type: 1 }); // Очистка формы после добавления
+            setNewExercise({ name: '', sets: 0, repetitions: null, weight: 0, type: 1, duration: null }); // Очистка формы после добавления
             setIsModalOpen(false)
         }
     };
 
 
+    const [verticalActive, setVerticalActive] = useState("tab1");
 
+    const handleVerticalClick = (value: string) => {
+        if (value === verticalActive) {
+            return;
+        }
+        setVerticalActive(value);
 
+        // Reset the field that is not active
+        if (value === "tab1") {
+            setNewExercise({
+                ...newExercise,
+                duration: null, // Reset duration when tab1 is active
+            });
+        } else {
+            setNewExercise({
+                ...newExercise,
+                repetitions: null, // Reset repetitions when tab2 is active
+            });
+        }
+    };
 
 
     return (
@@ -68,7 +109,7 @@ const Workout: React.FC = () => {
             {/* Отображение типа тренировки */}
 
             <div className='w-full'>
-                <TERipple >
+                <TERipple>
                     <Link
                         to={'/'}
                         className="block rounded border-2 border-neutral-800 px-6 pb-[6px] pt-2 text-xs font-medium uppercase leading-normal text-neutral-800 transition duration-150 ease-in-out hover:border-neutral-800 hover:bg-neutral-500 hover:bg-opacity-10 hover:text-neutral-800 focus:border-neutral-800 focus:text-neutral-800 focus:outline-none focus:ring-0 active:border-neutral-900 active:text-neutral-900 dark:border-neutral-900 dark:text-neutral-900 dark:hover:border-neutral-900 dark:hover:bg-neutral-100 dark:hover:bg-opacity-10 dark:hover:text-neutral-900 dark:focus:border-neutral-900 dark:focus:text-neutral-900 dark:active:border-neutral-900 dark:active:text-neutral-900"
@@ -85,7 +126,7 @@ const Workout: React.FC = () => {
 
             {/* Отображение списка упражнений */}
             <ExerciseTabs />
-           
+
 
             {/* Кнопка для добавления упражнения */}
 
@@ -144,15 +185,70 @@ const Workout: React.FC = () => {
                                     value={newExercise.sets != 0 ? newExercise.sets : ""}
                                     onChange={e => setNewExercise({ ...newExercise, sets: parseInt(e.target.value) })}
                                     label="Количество подходов"
-                                    className="mb-6"
+                                    className="my-3"
                                 />
-                                <TEInput
-                                    type="number"
-                                    value={newExercise.repetitions != 0 ? newExercise.repetitions : ""}
-                                    onChange={e => setNewExercise({ ...newExercise, repetitions: parseInt(e.target.value) })}
-                                    label="Количество повторений"
-                                    className="mb-6"
-                                />
+
+
+                                <div className="flex items-center my-3">
+                                    <TETabs vertical>
+                                        <ActiveTabBorderWrapper isActive={verticalActive === "tab1"}>
+                                            <TETabsItem
+                                                onClick={() => handleVerticalClick("tab1")}
+                                                active={verticalActive === "tab1"}
+                                                className=' !border-b-[0px] !m-0'
+                                            >
+                                                <CalculatorIcon className="h-8 w-8 text-dark-50" />
+                                            </TETabsItem>
+                                        </ActiveTabBorderWrapper>
+
+                                        <ActiveTabBorderWrapper isActive={verticalActive === "tab2"}>
+
+                                            <TETabsItem
+                                                onClick={() => handleVerticalClick("tab2")}
+                                                active={verticalActive === "tab2"}
+                                                className=' !border-b-[0px] !m-0 '
+                                            >
+                                                <ClockIcon className="h-8 w-8 text-dark-50" />
+                                            </TETabsItem>
+                                        </ActiveTabBorderWrapper>
+                                    </TETabs>
+
+                                    <TETabsContent
+                                        className={'max-w-full mx-auto h-full flex items-center justify-center'}
+                                    >
+                                        <TETabsPane
+                                            show={verticalActive === "tab1"}
+                                            className={verticalActive === "tab1" ? "pane-active" : ""}
+                                        >
+                                            <TEInput
+                                                type="number"
+                                                value={newExercise.repetitions != null ? newExercise.repetitions : ""}
+                                                onChange={e => setNewExercise({
+                                                    ...newExercise,
+                                                    repetitions: parseInt(e.target.value)
+                                                })}
+                                                label="Количество повторений"
+                                                className="my-auto"
+                                            />
+                                        </TETabsPane>
+                                        <TETabsPane
+                                            show={verticalActive === "tab2"}
+                                            className={verticalActive === "tab2" ? "pane-active" : ""}
+                                        >
+
+                                            <TEInput
+                                                type="number"
+                                                value={newExercise.duration != null ? newExercise.duration : ""}
+                                                onChange={e => setNewExercise({
+                                                    ...newExercise,
+                                                    duration: e.target.value ? parseInt(e.target.value) : null
+                                                })}
+                                                label="Время подхода (cек)"
+                                                className="my-auto"
+                                            />
+                                        </TETabsPane>
+                                    </TETabsContent>
+                                </div>
                                 <TEInput
                                     type="number"
                                     value={newExercise.weight != 0 ? newExercise.weight : ""}
@@ -198,7 +294,8 @@ const Workout: React.FC = () => {
             </TEModal>
             <div>
                 <TEToast open={showToast} autohide={true} delay={3000} setOpen={setShowToast}>
-                    <div className="flex items-center justify-between rounded-t-lg border-b-2 border-neutral-100 border-opacity-100 bg-clip-padding px-4 pb-2 pt-2.5">
+                    <div
+                        className="flex items-center justify-between rounded-t-lg border-b-2 border-neutral-100 border-opacity-100 bg-clip-padding px-4 pb-2 pt-2.5">
                         <p className="font-bold text-neutral-500 dark:text-neutral-200">
                             Успех
                         </p>
@@ -209,7 +306,8 @@ const Workout: React.FC = () => {
                                 onClick={() => setShowToast(false)}
                                 aria-label="Close"
                             >
-                                <span className="w-[1em] focus:opacity-100 disabled:pointer-events-none disabled:select-none disabled:opacity-25 [&.disabled]:pointer-events-none [&.disabled]:select-none [&.disabled]:opacity-25">
+                                <span
+                                    className="w-[1em] focus:opacity-100 disabled:pointer-events-none disabled:select-none disabled:opacity-25 [&.disabled]:pointer-events-none [&.disabled]:select-none [&.disabled]:opacity-25">
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         fill="none"

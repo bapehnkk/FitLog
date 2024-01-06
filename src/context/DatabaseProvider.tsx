@@ -12,9 +12,11 @@ export interface Exercise {
   type: number;
   name: string;
   sets: number;
-  repetitions: number;
-  weight: number; // Может быть `null`, если вес не применим
+  repetitions: number | null;  // Может быть `null`, если используется время
+  weight: number;              // Может быть `null`, если вес не применим
+  duration: number | null;     // Может быть `null`, если используются повторения
 }
+
 
 export interface ExerciseType {
   id?: number;
@@ -114,14 +116,22 @@ export const DatabaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   // Function for fetching exercises
   const addExercise = async (exercise: Exercise) => {
     const db = await Database.load("sqlite:test.db");
-    console.log(exercise);
     const query = `
-        INSERT INTO exercises (training_day_id, type, name, sets, repetitions, weight) 
-        VALUES ($1, $2, $3, $4, $5, $6)
+        INSERT INTO exercises (training_day_id, type, name, sets, repetitions, weight, duration) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
     `;
-    const result = await db.execute(query, [exercise.training_day_id, exercise.type, exercise.name, exercise.sets, exercise.repetitions, exercise.weight]);
+    const result = await db.execute(query, [
+      exercise.training_day_id,
+      exercise.type,
+      exercise.name,
+      exercise.sets,
+      exercise.repetitions,
+      exercise.weight,
+      exercise.duration
+    ]);
     return result.lastInsertId; // Возвращает ID вставленного упражнения
   };
+
 
 
   // Function for fetching exercise types
@@ -138,12 +148,20 @@ export const DatabaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const db = await Database.load("sqlite:test.db");
     const query = `
         UPDATE exercises 
-        SET sets = $1, repetitions = $2, weight = $3, type = $4 
-        WHERE id = $5
+        SET sets = $1, repetitions = $2, weight = $3, duration = $4, type = $5 
+        WHERE id = $6
     `;
-    const result = await db.execute(query, [updates.sets, updates.repetitions, updates.weight, updates.type, exerciseId]);
+    const result = await db.execute(query, [
+      updates.sets,
+      updates.repetitions,
+      updates.weight,
+      updates.duration,
+      updates.type,
+      exerciseId
+    ]);
     return result.rowsAffected; // Возвращает количество обновленных строк
   };
+
 
 
 
@@ -172,9 +190,10 @@ export const DatabaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 export async function createDatabaseStructure() {
   const db = await Database.load("sqlite:test.db");
 
-  // await db.execute(`DROP TABLE IF EXISTS training_days;`);
   // await db.execute(`DROP TABLE IF EXISTS exercises;`);
+  // await db.execute(`DROP TABLE IF EXISTS training_days;`);
   // await db.execute(`DROP TABLE IF EXISTS templates;`);
+
   // Создание таблиц
   await db.execute(`
     CREATE TABLE IF NOT EXISTS training_days (
@@ -191,8 +210,9 @@ export async function createDatabaseStructure() {
       type INTEGER CHECK (type >= 1 AND type <= 4),
       name TEXT NOT NULL,
       sets INTEGER,
-      repetitions INTEGER,
+      repetitions INTEGER CHECK ((repetitions IS NOT NULL AND duration IS NULL) OR (repetitions IS NULL AND duration IS NOT NULL)),
       weight REAL,
+      duration INTEGER, -- Добавлено новое поле для времени выполнения
       FOREIGN KEY(training_day_id) REFERENCES training_days(id)
     );
   `);
